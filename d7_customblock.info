@@ -1,0 +1,9 @@
+name = Drupal 7 Custom Block
+description = Custom block with user name and role
+package = Custom
+core = 7.x
+
+;stylesheets[all][] = css/views.css
+;dependencies[] = views:views
+;files[] = tests/example.test
+;configure = admin/config/customblock/example

@@ -1,0 +1,72 @@
+<?php
+/**
+ * @file
+ * A block module that displays user name and role.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function d7_customblock_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#customblock":
+      return t("Displays user name and role");
+      break;
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function d7_customblock_block_info() {
+  $blocks['customblock'] = array(
+    // The name that will appear in the block list.
+    'info' => t('User name and role'),
+    'status' => TRUE,
+    'region' => 'sidebar_first',
+    // Default setting.
+    'cache' => DRUPAL_CACHE_PER_ROLE,
+    // Block shown only in nodes
+    // 'visibility' => BLOCK_VISIBILITY_LISTED,
+    // 'pages' => 'node/*',
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function d7_customblock_block_view($delta = '') {
+
+  global $user;
+
+  switch ($delta) {
+    case 'customblock':
+
+      if (user_is_logged_in()){
+        $name = $user->name;
+        $mail = $user->name;
+      }
+      else {
+        $name = t('Anonimous user');
+        $mail = '-';
+      }
+
+      $block_content = '<p>'.
+        '<strong>Name:</strong> ' . $name . '<br>' .
+        '<strong>Mail:</strong> ' . $mail . '<br>' .
+        '<strong>Roles:</strong> ' . implode(', ',$user->roles) .
+        '</p>';
+
+
+      $block = [
+        'subject' => t('User details'),
+        'content' => [
+          '#markup' => $block_content,
+        ],
+      ];
+
+      return $block;
+  }
+
+}
