@@ -1,4 +1,4 @@
-name = Drupal 7 Custom Block
+name = Drupal 7 Custom BlockIDEAIDEA
 description = Custom block with user name and role
 package = Custom
 core = 7.x

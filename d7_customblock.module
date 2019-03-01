@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * A block module that displays user name and role.
@@ -11,7 +12,8 @@ function d7_customblock_help($path, $arg) {
   switch ($path) {
     case "admin/help#customblock":
       return t("Displays user name and role");
-      break;
+
+    break;
   }
 }
 
@@ -28,7 +30,7 @@ function d7_customblock_block_info() {
     'cache' => DRUPAL_CACHE_PER_ROLE,
     // Block shown only in nodes
     // 'visibility' => BLOCK_VISIBILITY_LISTED,
-    // 'pages' => 'node/*',
+    // 'pages' => 'node/*',.
   );
   return $blocks;
 }
@@ -43,7 +45,7 @@ function d7_customblock_block_view($delta = '') {
   switch ($delta) {
     case 'customblock':
 
-      if (user_is_logged_in()){
+      if (user_is_logged_in()) {
         $name = $user->name;
         $mail = $user->name;
       }
@@ -52,12 +54,10 @@ function d7_customblock_block_view($delta = '') {
         $mail = '-';
       }
 
-      $block_content = '<p>'.
-        '<strong>Name:</strong> ' . $name . '<br>' .
-        '<strong>Mail:</strong> ' . $mail . '<br>' .
-        '<strong>Roles:</strong> ' . implode(', ',$user->roles) .
+      $block_content = '<p><strong>Name:</strong> ' . $name . '<br>' .
+        '<strong>Mail:</strong> ' . $mail . '<br><strong>Roles:</strong> ' .
+        implode(', ', $user->roles) .
         '</p>';
-
 
       $block = [
         'subject' => t('User details'),

@@ -1,16 +1,21 @@
 <?php
+
+/**
+ * @file
+ * Drush commands for D7 custom block module.
+ */
+
 /**
  * Implements hook_drush_command().
  */
 function d7_customblock_drush_command() {
-
   $commands['d7_customblock_userinfo'] = array(
     'description' => 'Show info for a user',
     'aliases' => array('d7cu'),
-    'arguments' => array(
-      'uid' => 'User ID.'
-    ),
-    'required-arguments' => true,
+    'arguments' => [
+      'uid' => 'User ID.',
+    ],
+    'required-arguments' => TRUE,
     'options' => array(
       'roles' => 'Show roles.',
       'help' => 'Show command help.',
@@ -26,7 +31,6 @@ function d7_customblock_drush_command() {
 
 /**
  * Drush command logic.
- * drush_[COMMAND_NAME]().
  */
 function drush_d7_customblock_userinfo($uid = '') {
 
@@ -37,11 +41,13 @@ function drush_d7_customblock_userinfo($uid = '') {
 
   if ($user === FALSE) {
     drush_log('User not exists', 'warning');
-    if(drupal_is_cli()) return;
+    if (drupal_is_cli()) {
+      return;
+    }
     exit;
   }
 
-  if ($uid == 0){
+  if ($uid == 0) {
     $name = t('Anonimous user');
     $mail = '-';
   }
@@ -53,6 +59,6 @@ function drush_d7_customblock_userinfo($uid = '') {
   drush_print("> User info", 0);
   drush_print("Name: " . $name, 2);
   drush_print("Mail: " . $mail, 2);
-  drush_print("Roles: " . implode(', ',$user->roles), 2);
+  drush_print("Roles: " . implode(', ', $user->roles), 2);
 
 }
