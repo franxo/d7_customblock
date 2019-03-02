@@ -52,10 +52,13 @@ function d7_customblock_info_page() {
   $default_id = variable_get('d7_customblock_uid', 0);
   $user_info = d7_customblock_user_info($default_id);
 
-  $content = '<p><strong>Name:</strong> ' . $user_info->name . '<br>' .
-    '<strong>Mail:</strong> ' . $user_info->mail . '<br><strong>Roles:</strong> ' .
-    $user_info->roles . '</p>';
-  return $content;
+  $format = variable_get('d7_customblock_format', 0);
+  $content = d7_customblock_content_format($format, $user_info);
+
+  $page_array['d7_customblock_userinfo'] = $content;
+
+  return $page_array;
+
 }
 
 /**
@@ -71,6 +74,17 @@ function d7_customblock_form($form, &$form_state) {
     '#maxlength' => 2,
     '#description' => t('Default user id.'),
     '#required' => TRUE,
+  );
+
+  $form['d7_customblock_format'] = array(
+    '#type' => 'select',
+    '#title' => t('Format'),
+    '#options' => array(
+      0 => t('Paragraph'),
+      1 => t('List'),
+    ),
+    '#default_value' => variable_get('d7_customblock_format', 0),
+    '#description' => t('Select format.'),
   );
 
   return system_settings_form($form);
@@ -104,7 +118,6 @@ function d7_customblock_block_info() {
     'info' => t('User name and role'),
     'status' => TRUE,
     'region' => 'sidebar_first',
-    // Default setting.
     'cache' => DRUPAL_CACHE_PER_ROLE,
     // Block shown only in nodes
     // 'visibility' => BLOCK_VISIBILITY_LISTED,
@@ -124,15 +137,12 @@ function d7_customblock_block_view($delta = '') {
       $default_id = variable_get('d7_customblock_uid', 0);
       $user_info = d7_customblock_user_info($default_id);
 
-      $block_content = '<p><strong>Name:</strong> ' . $user_info->name . '<br>' .
-        '<strong>Mail:</strong> ' . $user_info->mail . '<br><strong>Roles:</strong> ' .
-        $user_info->roles . '</p>';
+      $format = variable_get('d7_customblock_format', 0);
+      $content = d7_customblock_content_format($format, $user_info);
 
       $block = [
         'subject' => t('User details'),
-        'content' => [
-          '#markup' => $block_content,
-        ],
+        'content' => $content,
       ];
 
       return $block;
@@ -168,4 +178,43 @@ function d7_customblock_user_info($default_uid) {
 
   return $user_info;
 
+}
+
+/**
+ * Custom format function.
+ *
+ * @param int $format
+ *   Format.
+ * @param object $user_info
+ *   User info.
+ *
+ * @return array
+ *   Render array.
+ */
+function d7_customblock_content_format($format, $user_info) {
+  if ($format == 0) {
+
+    $content = array(
+      '#markup' => '<p><strong>Name:</strong> ' . $user_info->name . '<br>' .
+      '<strong>Mail:</strong> ' . $user_info->mail . '<br><strong>Roles:</strong> ' .
+      $user_info->roles . '</p>',
+    );
+
+  }
+  else {
+
+    $vars_userinfo = get_object_vars($user_info);
+    $items = array();
+    foreach ($vars_userinfo as $key => $value) {
+      $items[] = ltrim($key, '_') . ': ' . $value;
+    }
+
+    $content = array(
+      '#title' => t('User info'),
+      '#items' => $items,
+      '#theme' => 'item_list__d7_customblock_userinfo',
+    );
+  }
+
+  return $content;
 }
