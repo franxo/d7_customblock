@@ -77,6 +77,25 @@ function d7_customblock_form($form, &$form_state) {
 }
 
 /**
+ * Implements validation from the Form API.
+ *
+ * @param array|null $form
+ *   A structured array containing the elements and properties of the form.
+ * @param array|null $form_state
+ *   An array that stores information about the form's current state
+ *   during processing.
+ */
+function d7_customblock_form_validate($form, &$form_state) {
+  $user_uid = $form_state['values']['d7_customblock_uid'];
+  if (!is_numeric($user_uid)) {
+    form_set_error('d7_customblock_uid', t("You must enter a number for the User Id."));
+  }
+  elseif ($user_uid < 0) {
+    form_set_error('d7_customblock_uid', t("User Id can't be negative."));
+  }
+}
+
+/**
  * Implements hook_block_info().
  */
 function d7_customblock_block_info() {
