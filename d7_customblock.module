@@ -50,22 +50,11 @@ function d7_customblock_menu() {
 function d7_customblock_info_page() {
 
   $default_id = variable_get('d7_customblock_uid', 0);
-  $user_to_show = user_load($default_id);
+  $user_info = d7_customblock_user_info($default_id);
 
-  if (($user_to_show === FALSE) or ($default_id == 0)) {
-    $name = t('Anonimous user');
-    $mail = '-';
-    $roles = 'Anonymous';
-  }
-  else {
-    $name = $user_to_show->name;
-    $mail = $user_to_show->mail;
-    $roles = implode(', ', $user_to_show->roles);
-  }
-
-  $content = '<p><strong>Name:</strong> ' . $name . '<br>' .
-    '<strong>Mail:</strong> ' . $mail . '<br><strong>Roles:</strong> ' .
-    $roles . '</p>';
+  $content = '<p><strong>Name:</strong> ' . $user_info->name . '<br>' .
+    '<strong>Mail:</strong> ' . $user_info->mail . '<br><strong>Roles:</strong> ' .
+    $user_info->roles . '</p>';
   return $content;
 }
 
@@ -114,22 +103,11 @@ function d7_customblock_block_view($delta = '') {
     case 'customblock':
 
       $default_id = variable_get('d7_customblock_uid', 0);
-      $user_to_show = user_load($default_id);
+      $user_info = d7_customblock_user_info($default_id);
 
-      if (($user_to_show === FALSE) or ($default_id == 0)) {
-        $name = t('Anonimous user');
-        $mail = '-';
-        $roles = 'Anonymous';
-      }
-      else {
-        $name = $user_to_show->name;
-        $mail = $user_to_show->mail;
-        $roles = implode(', ', $user_to_show->roles);
-      }
-
-      $block_content = '<p><strong>Name:</strong> ' . $name . '<br>' .
-        '<strong>Mail:</strong> ' . $mail . '<br><strong>Roles:</strong> ' .
-        $roles . '</p>';
+      $block_content = '<p><strong>Name:</strong> ' . $user_info->name . '<br>' .
+        '<strong>Mail:</strong> ' . $user_info->mail . '<br><strong>Roles:</strong> ' .
+        $user_info->roles . '</p>';
 
       $block = [
         'subject' => t('User details'),
@@ -140,5 +118,35 @@ function d7_customblock_block_view($delta = '') {
 
       return $block;
   }
+
+}
+
+/**
+ * Custom content function.
+ *
+ * @param int $default_uid
+ *   User id.
+ *
+ * @return Object
+ *   User info.
+ */
+function d7_customblock_user_info($default_uid) {
+
+  $user_info = new stdClass();
+
+  $user_to_show = user_load($default_uid);
+
+  if (($user_to_show === FALSE) or ($default_uid == 0)) {
+    $user_info->name = t('Anonimous user');
+    $user_info->mail = '-';
+    $user_info->roles = 'Anonymous';
+  }
+  else {
+    $user_info->name = $user_to_show->name;
+    $user_info->mail = $user_to_show->mail;
+    $user_info->roles = implode(', ', $user_to_show->roles);
+  }
+
+  return $user_info;
 
 }
