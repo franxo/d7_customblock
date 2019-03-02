@@ -32,29 +32,59 @@ function d7_customblock_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
 
+  $items['admin/config/people/user-info'] = array(
+    'title' => 'User info',
+    'description' => 'Configuration for d7 customblock module',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d7_customblock_form'),
+    'access arguments' => array('access administration configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
   return $items;
 }
 
 /**
- * User info page callback.
+ * Page callback: User info.
  */
 function d7_customblock_info_page() {
-  global $user;
 
-  if (user_is_logged_in()) {
-    $name = $user->name;
-    $mail = $user->name;
-  }
-  else {
+  $default_id = variable_get('d7_customblock_uid', 0);
+  $user_to_show = user_load($default_id);
+
+  if (($user_to_show === FALSE) or ($default_id == 0)) {
     $name = t('Anonimous user');
     $mail = '-';
+    $roles = 'Anonymous';
+  }
+  else {
+    $name = $user_to_show->name;
+    $mail = $user_to_show->mail;
+    $roles = implode(', ', $user_to_show->roles);
   }
 
   $content = '<p><strong>Name:</strong> ' . $name . '<br>' .
     '<strong>Mail:</strong> ' . $mail . '<br><strong>Roles:</strong> ' .
-    implode(', ', $user->roles) .
-    '</p>';
+    $roles . '</p>';
   return $content;
+}
+
+/**
+ * Page callback: d7 customblock settings.
+ */
+function d7_customblock_form($form, &$form_state) {
+
+  $form['d7_customblock_uid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('User id'),
+    '#default_value' => variable_get('d7_customblock_uid', 0),
+    '#size' => 2,
+    '#maxlength' => 2,
+    '#description' => t('Default user id.'),
+    '#required' => TRUE,
+  );
+
+  return system_settings_form($form);
 }
 
 /**
@@ -80,24 +110,26 @@ function d7_customblock_block_info() {
  */
 function d7_customblock_block_view($delta = '') {
 
-  global $user;
-
   switch ($delta) {
     case 'customblock':
 
-      if (user_is_logged_in()) {
-        $name = $user->name;
-        $mail = $user->name;
-      }
-      else {
+      $default_id = variable_get('d7_customblock_uid', 0);
+      $user_to_show = user_load($default_id);
+
+      if (($user_to_show === FALSE) or ($default_id == 0)) {
         $name = t('Anonimous user');
         $mail = '-';
+        $roles = 'Anonymous';
+      }
+      else {
+        $name = $user_to_show->name;
+        $mail = $user_to_show->mail;
+        $roles = implode(', ', $user_to_show->roles);
       }
 
       $block_content = '<p><strong>Name:</strong> ' . $name . '<br>' .
         '<strong>Mail:</strong> ' . $mail . '<br><strong>Roles:</strong> ' .
-        implode(', ', $user->roles) .
-        '</p>';
+        $roles . '</p>';
 
       $block = [
         'subject' => t('User details'),

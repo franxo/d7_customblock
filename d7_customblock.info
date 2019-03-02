@@ -6,4 +6,5 @@ core = 7.x
 ;stylesheets[all][] = css/views.css
 ;dependencies[] = views:views
 ;files[] = tests/example.test
-;configure = admin/config/customblock/example
+
+configure = admin/config/people/d7_customblock
